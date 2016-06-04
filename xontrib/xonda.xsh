@@ -1,6 +1,7 @@
 from prompt_toolkit.contrib.completers import WordCompleter
 from prompt_toolkit.validation import Validator, ValidationError
 from prompt_toolkit import prompt
+import os
 
 
 class EnvValidator(Validator):
@@ -50,7 +51,7 @@ def display_env_in_prompt(pythonpath, base_name):
 
 def update_conda_alias(pythonpath, base_name):
     """
-    Updates the CONDA_DEFAULT_ENV ENVVAR so `conda install` knows 
+    Updates the CONDA_DEFAULT_ENV ENVVAR so `conda install` knows
 	which env to install to
     """
     env_name = pythonpath.rsplit('/',1)[1]
@@ -62,8 +63,15 @@ def update_conda_alias(pythonpath, base_name):
 def main(args, stdin=None):
     #$WORKON_HOME points to ~/(anaconda|miniconda3)/env)
     if not 'WORKON_HOME' in ${...}:
-        print('go away')
-        return
+        do_find = input(
+            '`$WORKON_HOME` is not defined.  It should point at\n'
+            'the `env` subdirectory within your conda folder.  \n'
+            'Would you like me to to try to find it? (y/n): '
+        )
+        if do_find in ('Y', 'y'):
+            find_env_dir()
+        else:
+            return
 
     env_dir = $WORKON_HOME
     conda_dir = $WORKON_HOME.rsplit('/',1)[0]
@@ -75,10 +83,13 @@ def main(args, stdin=None):
 
     choice_completer = WordCompleter(choices)
 
-    choice = prompt('Choose a conda environment: ', completer=choice_completer, complete_while_typing=True, validator=EnvValidator(conda_dir, env_dir))
+    choice = prompt('Choose a conda environment (TAB to view all): ',
+                    completer=choice_completer,
+                    complete_while_typing=True,
+                    validator=EnvValidator(conda_dir, env_dir))
 
     if choice != conda_dir:
-        choice = env_dir+'/'+choice
+        choice = os.path.join(env_dir, choice)
     adjust_path(choice)
     display_env_in_prompt(choice, base_name)
     update_conda_alias(choice, base_name)
