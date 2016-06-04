@@ -1,4 +1,6 @@
 import os
+import builtins
+import subprocess
 from prompt_toolkit import prompt
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.contrib.completers import WordCompleter
@@ -75,6 +77,33 @@ def key_binding():
 
     return key_bindings_manager.registry
 
+def xonda_select():
+    '''
+    Offer a prompt of all available environments to switch to and
+    activate whichever one user requests
+    '''
+    env_dir = $WORKON_HOME
+    conda_dir = $WORKON_HOME.rsplit('/',1)[0]
+    base_name = $WORKON_HOME.rsplit('/',2)[1]
+
+    choices = [conda_dir]
+    for i in $(ls @(env_dir)).split(sep='\n')[:-1]:
+        choices.append('{}'.format(i))
+
+    choice_completer = WordCompleter(choices)
+
+    choice = prompt('Choose a conda environment (TAB to view all): ',
+                    completer=choice_completer,
+                    complete_while_typing=True,
+                    validator=EnvValidator(conda_dir, env_dir),
+                    key_bindings_registry=key_binding())
+
+    if choice != conda_dir:
+        choice = os.path.join(env_dir, choice)
+    adjust_path(choice)
+    display_env_in_prompt(choice, base_name)
+    update_conda_alias(choice, base_name)
+
 def main(args, stdin=None):
     #$WORKON_HOME points to ~/(anaconda|miniconda3)/env)
     if not 'WORKON_HOME' in ${...}:
@@ -88,27 +117,13 @@ def main(args, stdin=None):
         else:
             return
 
-    env_dir = $WORKON_HOME
-    conda_dir = $WORKON_HOME.rsplit('/',1)[0]
-    base_name = $WORKON_HOME.rsplit('/',2)[1]
+    if 'select' in args:
+        xonda_select()
+    elif len(args) > 0:
+        subprocess.check_output(['conda'] + args,
+                                env=builtins.__xonsh_env__.detype())
+    else:
+        return
 
-    choices = [conda_dir]
-    for i in $(ls @(env_dir)).split(sep='\n')[:-1]:
-        choices.append('{}'.format(i))
-
-    choice_completer = WordCompleter(choices)
-
-
-    choice = prompt('Choose a conda environment (TAB to view all): ',
-                    completer=choice_completer,
-                    complete_while_typing=True,
-                    validator=EnvValidator(conda_dir, env_dir),
-                    key_bindings_registry=key_binding())
-
-    if choice != conda_dir:
-        choice = os.path.join(env_dir, choice)
-    adjust_path(choice)
-    display_env_in_prompt(choice, base_name)
-    update_conda_alias(choice, base_name)
 
 aliases['xonda'] = main
