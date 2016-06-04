@@ -1,7 +1,9 @@
+import os
+from prompt_toolkit import prompt
+from prompt_toolkit.keys import Keys
 from prompt_toolkit.contrib.completers import WordCompleter
 from prompt_toolkit.validation import Validator, ValidationError
-from prompt_toolkit import prompt
-import os
+from prompt_toolkit.key_binding.manager import KeyBindingManager
 
 
 class EnvValidator(Validator):
@@ -56,9 +58,22 @@ def update_conda_alias(pythonpath, base_name):
     """
     env_name = pythonpath.rsplit('/',1)[1]
     if env_name == base_name:
-        del $CONDA_DEFAULT_ENV
+        try:
+            del $CONDA_DEFAULT_ENV
+        except KeyError:
+            pass
     else:
         $CONDA_DEFAULT_ENV=env_name
+
+def key_binding():
+    key_bindings_manager = KeyBindingManager()
+    handle = key_bindings_manager.registry.add_binding
+
+    @handle(Keys.ControlC)
+    def clear_text(event):
+        event.cli.current_buffer.reset()
+
+    return key_bindings_manager.registry
 
 def main(args, stdin=None):
     #$WORKON_HOME points to ~/(anaconda|miniconda3)/env)
@@ -83,10 +98,12 @@ def main(args, stdin=None):
 
     choice_completer = WordCompleter(choices)
 
+
     choice = prompt('Choose a conda environment (TAB to view all): ',
                     completer=choice_completer,
                     complete_while_typing=True,
-                    validator=EnvValidator(conda_dir, env_dir))
+                    validator=EnvValidator(conda_dir, env_dir),
+                    key_bindings_registry=key_binding())
 
     if choice != conda_dir:
         choice = os.path.join(env_dir, choice)
