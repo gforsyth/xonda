@@ -11,7 +11,7 @@ setup(
     description = "A xonsh wrapper around conda",
     packages=['xontrib'],
     package_dir={'xontrib': 'xontrib'},
-    package_data={'xontrib': ['*.xsh', '*.py']},
+    package_data={'xontrib': ['*.xsh']},
     author="Gil Forsyth",
     author_email="gilforsyth@gmail.com",
     include_package_data=True,

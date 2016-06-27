@@ -5,16 +5,23 @@ import conda.install
 from conda import config
 import functools
 
-from xontrib.xonda_completer import xonda_completer
-
 @functools.lru_cache(1)
 def get_envs():
+    """
+    Grab a list of all conda env dirs from conda
+    (for now only supports main directory)
+    """
     envs = config.envs_dirs
     return [env for env in $(ls @(envs[0])).split('\n')[:-1]]
 
     return env_list
 
 def activate(env):
+    """
+    Activate an existing conda directory.  If a non-root directory
+    is already active, deactivate it first.  Also install a conda
+    symlink if not present
+    """
     if env in get_envs():
         #disable any currently enabled env
         try:
@@ -39,6 +46,9 @@ def activate(env):
         print("No environment '{}' found".format(env))
 
 def deactivate():
+    """
+    Deactivate the current environment and return to the default
+    """
     try:
         $PATH.remove(os.path.join(config.default_prefix,
                                   'envs',
@@ -49,6 +59,8 @@ def deactivate():
         pass
 
 def _xonda(args, stdin=None):
+    """
+    If command is neither activate nor deactivate, just shell out to conda"""
     if len(args) == 2 and args[0] is 'activate':
         activate(args[1])
     elif len(args) == 1 and args[0] is 'deactivate':
@@ -59,9 +71,40 @@ def _xonda(args, stdin=None):
     else:
         return
 
+def xonda_completer(prefix, line, start, end, ctx):
+    """
+    Completion for `xonda`
+    """
+    args = line.split(' ')
+    if len(args) == 0 or args[0] != 'xonda':
+        return None
+    curix = args.index(prefix)
+    if curix == 1:
+        possible = {'activate', 'deactivate', 'install', 'remove', 'info',
+                    'help', 'list', 'search', 'update', 'upgrade', 'uninstall',
+                    'config', 'init', 'clean', 'package', 'bundle', 'env'}
+    elif curix == 2:
+        if args[1] == 'activate':
+            possible = set(get_envs())
+        elif args[1] == 'create':
+            possible = {'-p', '-n'}
+        elif args[1] == 'env':
+            possible = {'attach', 'create', 'export', 'list', 'remove',
+                        'upload', 'update'}
+
+    elif curix == 3:
+        if args[2] == 'export':
+            possible = {'-n', '--name'}
+
+    elif curix == 4:
+        if args[2] == 'export' and args[3] in ['-n','--name']:
+            possible = set(get_envs())
+
+    return {i for i in possible if i.startswith(prefix)}
+
 aliases['xonda'] = _xonda
 
 #add to list of completers
 __xonsh_completers__['xonda'] = xonda_completer
 #bump to top of list (otherwise bash completion interferes)
-#__xonsh_completers__.move_to_end('xonda', last=False)
+__xonsh_completers__.move_to_end('xonda', last=False)
