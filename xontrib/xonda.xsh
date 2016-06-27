@@ -14,8 +14,14 @@ def get_envs():
 
 def activate(env):
     if env in get_envs():
+        #disable any currently enabled env
+        try:
+            if $CONDA_DEFAULT_ENV:
+                deactivate()
+        except KeyError:
+            pass
+        #makes sure `conda` points at the right env
         $CONDA_DEFAULT_ENV = env
-        #symlink
         base_dir = os.path.join(config.default_prefix, 'envs')
         bin_dir = os.path.join(base_dir, env, 'bin')
         $PATH.insert(0, bin_dir)
@@ -23,6 +29,10 @@ def activate(env):
             $PATH.remove(os.path.join(config.default_prefix, 'bin'))
         except ValueError:
             pass
+        #ensure conda symlink exists in directory
+        conda.install.symlink_conda(os.path.join(base_dir, env),
+                                    config.default_prefix,
+                                    $SHELL)
     else:
         print("No environment '{}' found".format(env))
 
@@ -42,7 +52,7 @@ def _xonda(args, stdin=None):
     elif len(args) == 1 and args[0] is 'deactivate':
         deactivate()
     elif len(args) > 0:
-        subprocess.check_output(['conda'] + args,
+        subprocess.call(['conda'] + args,
                                 env=builtins.__xonsh_env__.detype())
     else:
         return
