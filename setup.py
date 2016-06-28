@@ -10,7 +10,7 @@ name = "xonda"
 
 setup(
     name=name,
-    version="0.1",
+    version="0.1.1",
     description="A xonsh wrapper around conda",
     long_description=long_description,
     packages=['xontrib'],
