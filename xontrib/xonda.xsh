@@ -1,9 +1,9 @@
 import os
-import builtins
 import subprocess
 import conda.install
 from conda import config
 import functools
+
 
 @functools.lru_cache(1)
 def get_envs():
@@ -16,6 +16,7 @@ def get_envs():
 
     return env_list
 
+
 def activate(env):
     """
     Activate an existing conda directory.  If a non-root directory
@@ -23,13 +24,13 @@ def activate(env):
     symlink if not present
     """
     if env in get_envs():
-        #disable any currently enabled env
+        # disable any currently enabled env
         try:
             if $CONDA_DEFAULT_ENV:
                 deactivate()
         except KeyError:
             pass
-        #makes sure `conda` points at the right env
+        # make sure `conda` points at the right env
         $CONDA_DEFAULT_ENV = env
         base_dir = os.path.join(config.default_prefix, 'envs')
         bin_dir = os.path.join(base_dir, env, 'bin')
@@ -38,12 +39,13 @@ def activate(env):
             $PATH.remove(os.path.join(config.default_prefix, 'bin'))
         except ValueError:
             pass
-        #ensure conda symlink exists in directory
+        # ensure conda symlink exists in directory
         conda.install.symlink_conda(os.path.join(base_dir, env),
                                     config.default_prefix,
                                     $SHELL)
     else:
         print("No environment '{}' found".format(env))
+
 
 def deactivate():
     """
@@ -57,6 +59,7 @@ def deactivate():
         del $CONDA_DEFAULT_ENV
     except ValueError:
         pass
+
 
 def _xonda(args, stdin=None):
     """
@@ -104,7 +107,7 @@ def xonda_completer(prefix, line, start, end, ctx):
 
 aliases['xonda'] = _xonda
 
-#add to list of completers
+# add xonda_completer to list of completers
 __xonsh_completers__['xonda'] = xonda_completer
-#bump to top of list (otherwise bash completion interferes)
+# bump to top of list
 __xonsh_completers__.move_to_end('xonda', last=False)
