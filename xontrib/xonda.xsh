@@ -104,6 +104,9 @@ def xonda_completer(prefix, line, start, end, ctx):
         if args[2] == 'export' and args[3] in ['-n','--name']:
             possible = set(get_envs())
 
+    else:
+        return None
+
     return {i for i in possible if i.startswith(prefix)}
 
 aliases['xonda'] = _xonda
