@@ -34,9 +34,9 @@ def activate(env):
         $CONDA_DEFAULT_ENV = env
         base_dir = os.path.join(config.default_prefix, 'envs')
         bin_dir = os.path.join(base_dir, env, 'bin')
-        $PATH.insert(0, bin_dir)
         try:
-            $PATH.remove(os.path.join(config.default_prefix, 'bin'))
+            index = $PATH.index(os.path.join(config.default_prefix, 'bin'))
+            $PATH[index] = bin_dir
         except ValueError:
             pass
         # ensure conda symlink exists in directory
@@ -52,10 +52,11 @@ def deactivate():
     Deactivate the current environment and return to the default
     """
     try:
-        $PATH.remove(os.path.join(config.default_prefix,
+        index = $PATH.index(os.path.join(config.default_prefix,
                                   'envs',
                                   $CONDA_DEFAULT_ENV,
                                   'bin'))
+        $PATH[index] = os.path.join(config.default_prefix, 'bin')
         del $CONDA_DEFAULT_ENV
     except ValueError:
         pass
