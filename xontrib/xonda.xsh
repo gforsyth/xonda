@@ -81,7 +81,7 @@ def xonda_completer(prefix, line, start, end, ctx):
     """
     args = line.split(' ')
     possible = set()
-    if len(args) == 0 or args[0] != 'xonda':
+    if len(args) == 0 or args[0] not in ['xonda', 'conda']:
         return None
     curix = args.index(prefix)
     if curix == 1:
