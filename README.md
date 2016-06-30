@@ -2,7 +2,7 @@
 
 This is a thin wrapper around `conda` for use with [xonsh](http://xon.sh) 
 
-It provides tab completion for most features and also will tab-complete activate calls for environments.
+It provides tab completion for most features and also will tab-complete activate/select calls for environments.
 
 ## Installation
 

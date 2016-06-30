@@ -4,8 +4,9 @@ name = "xonda"
 
 setup(
     name=name,
-    version="0.1.3dev1",
+    version="0.1.3dev2",
     license="MIT",
+    url="https://github.com/gforsyth/xonda",
     description="A xonsh wrapper around conda",
     packages=['xontrib'],
     package_dir={'xontrib': 'xontrib'},

@@ -65,7 +65,7 @@ def deactivate():
 def _xonda(args, stdin=None):
     """
     If command is neither activate nor deactivate, just shell out to conda"""
-    if len(args) == 2 and args[0] is 'activate':
+    if len(args) == 2 and args[0] in ['activate', 'select']:
         activate(args[1])
     elif len(args) == 1 and args[0] is 'deactivate':
         deactivate()
@@ -80,15 +80,18 @@ def xonda_completer(prefix, line, start, end, ctx):
     Completion for `xonda`
     """
     args = line.split(' ')
+    possible = set()
     if len(args) == 0 or args[0] != 'xonda':
         return None
     curix = args.index(prefix)
     if curix == 1:
         possible = {'activate', 'deactivate', 'install', 'remove', 'info',
                     'help', 'list', 'search', 'update', 'upgrade', 'uninstall',
-                    'config', 'init', 'clean', 'package', 'bundle', 'env'}
+                    'config', 'init', 'clean', 'package', 'bundle', 'env',
+                    'select'}
+
     elif curix == 2:
-        if args[1] == 'activate':
+        if args[1] in ['activate', 'select']:
             possible = set(get_envs())
         elif args[1] == 'create':
             possible = {'-p', '-n'}
@@ -103,9 +106,6 @@ def xonda_completer(prefix, line, start, end, ctx):
     elif curix == 4:
         if args[2] == 'export' and args[3] in ['-n','--name']:
             possible = set(get_envs())
-
-    else:
-        return None
 
     return {i for i in possible if i.startswith(prefix)}
 
