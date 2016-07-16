@@ -110,7 +110,7 @@ def xonda_completer(prefix, line, start, end, ctx):
 
     return {i for i in possible if i.startswith(prefix)}
 
-aliases['xonda'] = _xonda
+aliases['conda'] = _xonda
 
 # add xonda_completer to list of completers
 __xonsh_completers__['xonda'] = xonda_completer
