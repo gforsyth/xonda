@@ -3,8 +3,6 @@ import subprocess
 import conda.install
 from conda import config
 import functools
-import builtins
-
 
 @functools.lru_cache(1)
 def get_envs():
@@ -72,7 +70,7 @@ def _xonda(args, stdin=None):
         deactivate()
     elif len(args) > 0:
         subprocess.call(['conda'] + args,
-                                env=builtins.__xonsh_env__.detype())
+                                env=__xonsh_env__.detype())
     else:
         return
 
