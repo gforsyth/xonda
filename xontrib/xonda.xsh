@@ -3,7 +3,6 @@ import subprocess
 import conda.install
 from conda import config
 import functools
-import builtins
 
 
 @functools.lru_cache(1)
@@ -72,7 +71,7 @@ def _xonda(args, stdin=None):
         deactivate()
     elif len(args) > 0:
         subprocess.call(['conda'] + args,
-                                env=builtins.__xonsh_env__.detype())
+                                env=__xonsh_env__.detype())
     else:
         return
 
@@ -89,7 +88,7 @@ def xonda_completer(prefix, line, start, end, ctx):
         possible = {'activate', 'deactivate', 'install', 'remove', 'info',
                     'help', 'list', 'search', 'update', 'upgrade', 'uninstall',
                     'config', 'init', 'clean', 'package', 'bundle', 'env',
-                    'select'}
+                    'select', 'create'}
 
     elif curix == 2:
         if args[1] in ['activate', 'select']:
@@ -113,6 +112,7 @@ def xonda_completer(prefix, line, start, end, ctx):
 aliases['conda'] = _xonda
 
 # add xonda_completer to list of completers
+#completer add xonda_completer 'start'
 __xonsh_completers__['xonda'] = xonda_completer
 # bump to top of list
 __xonsh_completers__.move_to_end('xonda', last=False)
