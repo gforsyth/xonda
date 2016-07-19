@@ -4,6 +4,7 @@ import conda.install
 from conda import config
 import functools
 
+
 @functools.lru_cache(1)
 def get_envs():
     """
@@ -87,7 +88,7 @@ def xonda_completer(prefix, line, start, end, ctx):
         possible = {'activate', 'deactivate', 'install', 'remove', 'info',
                     'help', 'list', 'search', 'update', 'upgrade', 'uninstall',
                     'config', 'init', 'clean', 'package', 'bundle', 'env',
-                    'select'}
+                    'select', 'create'}
 
     elif curix == 2:
         if args[1] in ['activate', 'select']:
