@@ -6,7 +6,7 @@ It provides tab completion for most features and also will tab-complete activate
 
 ## Installation
 
-Just do a 
+Just do a
 ```console
 pip install xonda
 ```
@@ -17,7 +17,7 @@ python setup.py install
 ```
 
 ## Configuration
-To automatically load xonda at startup, put 
+To automatically load xonda at startup, put
 ```console
 xontrib load xonda
 ```
@@ -26,7 +26,12 @@ in your `.xonshrc`
 
 ## Usage
 
-Use as you would use `conda`, but just write `xonda` instead.  Contrived?  You bet!  But hey, `x` is right next to `c` on many keyboards and if you're using `xonsh`, chances are you type `xonda` all the time anyway.  Then curse and fix it.  
+Xonda will automatically alias itself as `conda`, so you should not see any
+differences, if you prefer it not to do that, remove the alias in your
+`.xonshrc`. Then, use as you would use `conda`, but just write `xonda` instead.
+Xontrived?  You bet!  But hey, `x` is right next to `c` on many keyboards and
+if you're using `xonsh`, chances are you type `xonda` all the time anyway.
+Then curse and fix it.
 
 ```console
 xonda install -c conda-forge xonsh
