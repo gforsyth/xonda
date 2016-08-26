@@ -4,7 +4,7 @@ name = 'xonda'
 
 setup(
     name=name,
-    version='0.1.4',
+    version='0.1.5',
     license='MIT',
     url='https://github.com/gforsyth/xonda',
     description='A xonsh wrapper around conda',
