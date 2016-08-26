@@ -2,10 +2,8 @@ import os
 import subprocess
 import conda.install
 from conda import config
-import functools
 
 
-@functools.lru_cache(1)
 def get_envs():
     """
     Grab a list of all conda env dirs from conda
