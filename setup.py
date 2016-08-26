@@ -1,17 +1,17 @@
 from setuptools import setup
 
-name = "xonda"
+name = 'xonda'
 
 setup(
     name=name,
-    version="0.1.3dev7",
-    license="MIT",
-    url="https://github.com/gforsyth/xonda",
-    description="A xonsh wrapper around conda",
+    version='0.1.4',
+    license='MIT',
+    url='https://github.com/gforsyth/xonda',
+    description='A xonsh wrapper around conda',
     packages=['xontrib'],
     package_dir={'xontrib': 'xontrib'},
     package_data={'xontrib': ['*.xsh']},
-    author="Gil Forsyth",
-    author_email="gilforsyth@gmail.com",
+    author='Gil Forsyth',
+    author_email='gilforsyth@gmail.com',
     zip_safe=False,
 )
