@@ -4,7 +4,7 @@ import conda.install
 from conda import config
 
 
-def get_envs():
+def _get_envs():
     """
     Grab a list of all conda env dirs from conda
     (for now only supports main directory)
@@ -15,17 +15,17 @@ def get_envs():
     return env_list
 
 
-def activate(env):
+def _activate(env):
     """
     Activate an existing conda directory.  If a non-root directory
-    is already active, deactivate it first.  Also install a conda
+    is already active, _deactivate it first.  Also install a conda
     symlink if not present
     """
-    if env in get_envs():
+    if env in _get_envs():
         # disable any currently enabled env
         try:
             if $CONDA_DEFAULT_ENV:
-                deactivate()
+                _deactivate()
         except KeyError:
             pass
         # make sure `conda` points at the right env
@@ -45,7 +45,7 @@ def activate(env):
         print("No environment '{}' found".format(env))
 
 
-def deactivate():
+def _deactivate():
     """
     Deactivate the current environment and return to the default
     """
@@ -62,18 +62,18 @@ def deactivate():
 
 def _xonda(args, stdin=None):
     """
-    If command is neither activate nor deactivate, just shell out to conda"""
+    If command is neither _activate nor _deactivate, just shell out to conda"""
     if len(args) == 2 and args[0] in ['activate', 'select']:
-        activate(args[1])
+        _activate(args[1])
     elif len(args) == 1 and args[0] is 'deactivate':
-        deactivate()
+        _deactivate()
     elif len(args) > 0:
         subprocess.call(['conda'] + args,
                                 env=__xonsh_env__.detype())
     else:
         return
 
-def xonda_completer(prefix, line, start, end, ctx):
+def _xonda_completer(prefix, line, start, end, ctx):
     """
     Completion for `xonda`
     """
@@ -90,7 +90,7 @@ def xonda_completer(prefix, line, start, end, ctx):
 
     elif curix == 2:
         if args[1] in ['activate', 'select']:
-            possible = set(get_envs())
+            possible = set(_get_envs())
         elif args[1] == 'create':
             possible = {'-p', '-n'}
         elif args[1] == 'env':
@@ -103,13 +103,13 @@ def xonda_completer(prefix, line, start, end, ctx):
 
     elif curix == 4:
         if args[2] == 'export' and args[3] in ['-n','--name']:
-            possible = set(get_envs())
+            possible = set(_get_envs())
 
     return {i for i in possible if i.startswith(prefix)}
 
 aliases['conda'] = _xonda
 
-# add xonda_completer to list of completers
-__xonsh_completers__['xonda'] = xonda_completer
+# add _xonda_completer to list of completers
+__xonsh_completers__['xonda'] = _xonda_completer
 # bump to top of list
 __xonsh_completers__.move_to_end('xonda', last=False)
