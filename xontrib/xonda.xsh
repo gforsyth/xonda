@@ -2,26 +2,48 @@ import os
 import subprocess
 import conda.install
 from conda import config
+from collections import namedtuple
 
 
 def _get_envs():
     """
-    Grab a list of all conda env dirs from conda
-    (for now only supports main directory)
+    Grab a list of all conda env dirs from conda.
     """
-    envs = config.envs_dirs
-    return [env for env in $(ls @(envs[0])).split('\n')[:-1]]
+    # create a named tuple for self-documenting code
+    Env = namedtuple('Env', ['name', 'path', 'bin_dir', 'envs_dir'])
+
+    # create the list of envrionments
+    env_list = list()
+    for envs_dir in config.envs_dirs:
+        # skip non-existing environments directories
+        if not os.path.exists(envs_dir):
+            continue
+        # for each environment in the environments directory
+        for env_name in $(ls @(envs_dir)).split('\n')[:-1]:
+            # check for duplicates names
+            if env_name in [env.name for env in env_list]:
+                raise ValueError('Multiple environments with the same name '
+                                 'in the system is not supported by xonda.')
+            # add the environment to the list
+            env_list.append(Env(
+                name=env_name,
+                path=os.path.join(envs_dir, env_name),
+                bin_dir=os.path.join(envs_dir, env_name, 'bin'),
+                envs_dir=envs_dir,
+            ))
 
     return env_list
 
 
-def _activate(env):
+def _activate(env_name):
     """
     Activate an existing conda directory.  If a non-root directory
     is already active, _deactivate it first.  Also install a conda
     symlink if not present
     """
-    if env in _get_envs():
+    if env_name in [env.name for env in _get_envs()]:
+        # get the environment
+        env = next(e for e in _get_envs() if e.name == env_name)
         # disable any currently enabled env
         try:
             if $CONDA_DEFAULT_ENV:
@@ -29,35 +51,29 @@ def _activate(env):
         except KeyError:
             pass
         # make sure `conda` points at the right env
-        $CONDA_DEFAULT_ENV = env
-        base_dir = os.path.join(config.default_prefix, 'envs')
-        bin_dir = os.path.join(base_dir, env, 'bin')
-        try:
-            index = $PATH.index(os.path.join(config.default_prefix, 'bin'))
-            $PATH[index] = bin_dir
-        except ValueError:
-            pass
+        $CONDA_DEFAULT_ENV = env.name
+        # add the environment's bin dir in $PATH
+        if env.bin_dir not in $PATH:
+            $PATH.insert(0, env.bin_dir)
         # ensure conda symlink exists in directory
-        conda.install.symlink_conda(os.path.join(base_dir, env),
+        conda.install.symlink_conda(env.path,
                                     config.default_prefix,
                                     $SHELL)
     else:
-        print("No environment '{}' found".format(env))
+        print("No environment '{}' found".format(env_name))
 
 
 def _deactivate():
     """
     Deactivate the current environment and return to the default
     """
-    try:
-        index = $PATH.index(os.path.join(config.default_prefix,
-                                  'envs',
-                                  $CONDA_DEFAULT_ENV,
-                                  'bin'))
-        $PATH[index] = os.path.join(config.default_prefix, 'bin')
-        del $CONDA_DEFAULT_ENV
-    except ValueError:
-        pass
+    # get the environment for the conda environment variable
+    env = next(e for e in _get_envs() if e.name == $CONDA_DEFAULT_ENV)
+    # remove the environment's bin directory from $PATH
+    if env.bin_dir in $PATH:
+        $PATH.remove(env.bin_dir)
+    # remove the conda environment variable
+    del $CONDA_DEFAULT_ENV
 
 
 def _xonda(args, stdin=None):
@@ -90,7 +106,7 @@ def _xonda_completer(prefix, line, start, end, ctx):
 
     elif curix == 2:
         if args[1] in ['activate', 'select']:
-            possible = set(_get_envs())
+            possible = set([env.name for env in _get_envs()])
         elif args[1] == 'create':
             possible = {'-p', '-n'}
         elif args[1] == 'env':
@@ -103,7 +119,7 @@ def _xonda_completer(prefix, line, start, end, ctx):
 
     elif curix == 4:
         if args[2] == 'export' and args[3] in ['-n','--name']:
-            possible = set(_get_envs())
+            possible = set([env.name for env in _get_envs()])
 
     return {i for i in possible if i.startswith(prefix)}
 
