@@ -52,12 +52,8 @@ def _activate(env_name):
             pass
         # make sure `conda` points at the right env
         $CONDA_DEFAULT_ENV = env.name
-        # add the environment's bin dir in $PATH just before system's bin dir
-        try:
-            index = $PATH.index(os.path.join(config.default_prefix, 'bin'))
-            $PATH.insert(index, env.bin_dir)
-        except ValueError:
-            # otherwise just place it at the start of the list
+        # add the environment's bin dir in $PATH
+        if env.bin_dir not in $PATH:
             $PATH.insert(0, env.bin_dir)
         # ensure conda symlink exists in directory
         conda.install.symlink_conda(env.path,
@@ -71,15 +67,13 @@ def _deactivate():
     """
     Deactivate the current environment and return to the default
     """
-    try:
-        # get the environment for the conda environment variable
-        env = next(e for e in _get_envs() if e.name == $CONDA_DEFAULT_ENV)
-        # remove the environment's bin directory from $PATH
+    # get the environment for the conda environment variable
+    env = next(e for e in _get_envs() if e.name == $CONDA_DEFAULT_ENV)
+    # remove the environment's bin directory from $PATH
+    if env.bin_dir in $PATH:
         $PATH.remove(env.bin_dir)
-        # remove the conda environment variable
-        del $CONDA_DEFAULT_ENV
-    except ValueError:
-        pass
+    # remove the conda environment variable
+    del $CONDA_DEFAULT_ENV
 
 
 def _xonda(args, stdin=None):
