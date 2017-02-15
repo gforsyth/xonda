@@ -112,7 +112,7 @@ def _xonda_completer(prefix, line, start, end, ctx):
 
     elif curix == 2:
         if args[1] in ['activate', 'select']:
-            possible = set(_get_envs())
+            possible = set([env.name for env in _get_envs()])
         elif args[1] == 'create':
             possible = {'-p', '-n'}
         elif args[1] == 'env':
@@ -125,7 +125,7 @@ def _xonda_completer(prefix, line, start, end, ctx):
 
     elif curix == 4:
         if args[2] == 'export' and args[3] in ['-n','--name']:
-            possible = set(_get_envs())
+            possible = set([env.name for env in _get_envs()])
 
     return {i for i in possible if i.startswith(prefix)}
 
