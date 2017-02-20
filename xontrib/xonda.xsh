@@ -5,6 +5,15 @@ from conda import config
 from collections import namedtuple
 
 
+def _list_dirs(path):
+    """
+    Generator that lists the directories in a given path.
+    """
+    for entry in os.scandir(path):
+        if not entry.name.startswith('.') and entry.is_dir():
+            yield entry.name
+
+
 def _get_envs():
     """
     Grab a list of all conda env dirs from conda.
@@ -19,7 +28,7 @@ def _get_envs():
         if not os.path.exists(envs_dir):
             continue
         # for each environment in the environments directory
-        for env_name in $(ls @(envs_dir)).split('\n')[:-1]:
+        for env_name in _list_dirs(envs_dir):
             # check for duplicates names
             if env_name in [env.name for env in env_list]:
                 raise ValueError('Multiple environments with the same name '
