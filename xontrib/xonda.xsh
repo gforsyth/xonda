@@ -93,8 +93,7 @@ def _xonda(args, stdin=None):
     elif len(args) == 1 and args[0] is 'deactivate':
         _deactivate()
     elif len(args) > 0:
-        subprocess.call(['conda'] + args,
-                                env=__xonsh_env__.detype())
+        @$(which -s conda) @(args)
     else:
         return
 
