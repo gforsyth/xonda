@@ -1,6 +1,6 @@
 import os
 import subprocess
-import conda.install
+import conda.install as ci
 from conda import config
 from collections import namedtuple
 
@@ -65,7 +65,7 @@ def _activate(env_name):
         if env.bin_dir not in $PATH:
             $PATH.insert(0, env.bin_dir)
         # ensure conda symlink exists in directory
-        conda.install.symlink_conda(env.path,
+        ci.symlink_conda(env.path,
                                     config.default_prefix,
                                     $SHELL)
     else:
@@ -94,6 +94,8 @@ def _xonda(args, stdin=None):
         _deactivate()
     elif len(args) > 0:
         @$(which -s conda) @(args)
+    elif len(args) == 0:
+        @$(which -s conda) -h
     else:
         return
 
