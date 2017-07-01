@@ -65,9 +65,7 @@ def _activate(env_name):
         if env.bin_dir not in $PATH:
             $PATH.insert(0, env.bin_dir)
         # ensure conda symlink exists in directory
-        ci.symlink_conda(env.path,
-                                    config.default_prefix,
-                                    $SHELL)
+        ci.symlink_conda(env.path, config.default_prefix)
     else:
         print("No environment '{}' found".format(env_name))
 
