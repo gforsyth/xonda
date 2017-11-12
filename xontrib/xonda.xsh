@@ -13,7 +13,6 @@ def _list_dirs(path):
         if not entry.name.startswith('.') and entry.is_dir():
             yield entry.name
 
-
 def _get_envs():
     """
     Grab a list of all conda env dirs from conda.
@@ -44,15 +43,45 @@ def _get_envs():
     return env_list
 
 
-def _activate(env_name):
+def _pick_env(env_name):
     """
-    Activate an existing conda directory.  If a non-root directory
-    is already active, _deactivate it first.  Also install a conda
-    symlink if not present
+    Select an environment from the detected environments or from another path.
     """
     if env_name in [env.name for env in _get_envs()]:
         # get the environment
         env = next(e for e in _get_envs() if e.name == env_name)
+        return env
+    elif os.path.exists(env_name) and "bin" in _list_dirs(env_name):
+        # if the environment name is non-stamdard path, i.e. found in
+        # the envs_dir, make sure it contains a bin directory
+        envs_dir, env_name = os.path.split(env_name.rstrip(os.path.sep))
+
+        # create a named tuple for self-documenting code
+        Env = namedtuple('Env', ['name', 'path', 'bin_dir', 'envs_dir'])
+        env = Env(
+            name=env_name,
+            path=os.path.join(envs_dir, env_name),
+            bin_dir=os.path.join(envs_dir, env_name, 'bin'),
+            envs_dir=envs_dir,
+            )
+        # add the custom path to the envs_dirs so that the environment can
+        # be deactivated again.
+        if envs_dir not in config.envs_dirs:
+            # extend envs_dirs tuple in config
+            config.envs_dirs += (envs_dir,)
+        return env
+    else:
+        return False
+
+
+def _activate(env_name):
+    """
+    Activate an existing conda directory.  If a non-root directory
+    is already active, _deactivate it first.  Also install a conda
+    symlink if not present.
+    """
+    env = _pick_env(env_name)
+    if env:
         # disable any currently enabled env
         try:
             if $CONDA_DEFAULT_ENV:
