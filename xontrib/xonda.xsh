@@ -1,5 +1,4 @@
 import os
-import subprocess
 import conda.install as ci
 from conda import config
 from collections import namedtuple
