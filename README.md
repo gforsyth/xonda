@@ -11,6 +11,11 @@ Just do a
 pip install xonda
 ```
 
+or
+```console
+conda install xonda -c conda-forge
+```
+
 or you can clone the repo and do
 ```console
 pip install .
