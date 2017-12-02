@@ -4,6 +4,8 @@ from conda import config
 from collections import namedtuple
 
 
+_Env = namedtuple('Env', ['name', 'path', 'bin_dir', 'envs_dir'])
+
 def _list_dirs(path):
     """
     Generator that lists the directories in a given path.
@@ -12,13 +14,11 @@ def _list_dirs(path):
         if not entry.name.startswith('.') and entry.is_dir():
             yield entry.name
 
+
 def _get_envs():
     """
     Grab a list of all conda env dirs from conda.
     """
-    # create a named tuple for self-documenting code
-    Env = namedtuple('Env', ['name', 'path', 'bin_dir', 'envs_dir'])
-
     # create the list of envrionments
     env_list = list()
     for envs_dir in config.envs_dirs:
@@ -32,12 +32,11 @@ def _get_envs():
                 raise ValueError('Multiple environments with the same name '
                                  'in the system is not supported by xonda.')
             # add the environment to the list
-            env_list.append(Env(
-                name=env_name,
-                path=os.path.join(envs_dir, env_name),
-                bin_dir=os.path.join(envs_dir, env_name, 'bin'),
-                envs_dir=envs_dir,
-            ))
+            env_list.append(_Env(name=env_name,
+                                 path=os.path.join(envs_dir, env_name),
+                                 bin_dir=os.path.join(envs_dir, env_name, 'bin'),
+                                 envs_dir=envs_dir,
+                            ))
 
     return env_list
 
@@ -51,18 +50,15 @@ def _pick_env(env_name):
         env = next(e for e in _get_envs() if e.name == env_name)
         return env
     elif os.path.exists(env_name) and "bin" in _list_dirs(env_name):
-        # if the environment name is non-stamdard path, i.e. found in
+        # if the environment name is non-standard path, i.e. found in
         # the envs_dir, make sure it contains a bin directory
         envs_dir, env_name = os.path.split(env_name.rstrip(os.path.sep))
 
-        # create a named tuple for self-documenting code
-        Env = namedtuple('Env', ['name', 'path', 'bin_dir', 'envs_dir'])
-        env = Env(
-            name=env_name,
-            path=os.path.join(envs_dir, env_name),
-            bin_dir=os.path.join(envs_dir, env_name, 'bin'),
-            envs_dir=envs_dir,
-            )
+        env = _Env(name=env_name,
+                   path=os.path.join(envs_dir, env_name),
+                   bin_dir=os.path.join(envs_dir, env_name, 'bin'),
+                   envs_dir=envs_dir,
+                   )
         # add the custom path to the envs_dirs so that the environment can
         # be deactivated again.
         if envs_dir not in config.envs_dirs:
@@ -150,6 +146,10 @@ def _xonda_completer(prefix, line, start, end, ctx):
     elif curix == 3:
         if args[2] == 'export':
             possible = {'-n', '--name'}
+        elif args[2] == 'create':
+            possible = {'-h', '--help', '-f', '--file', '-n', '--name', '-p',
+                        '--prefix', '-q', '--quiet', '--force', '--json',
+                        '--debug', '-v', '--verbose'}
 
     elif curix == 4:
         if args[2] == 'export' and args[3] in ['-n','--name']:
