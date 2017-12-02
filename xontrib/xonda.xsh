@@ -82,13 +82,14 @@ def _activate(env_name):
     env = _pick_env(env_name)
     if env:
         # disable any currently enabled env
-        try:
-            if $CONDA_DEFAULT_ENV:
-                _deactivate()
-        except KeyError:
-            pass
+        if 'CONDA_DEFAULT_ENV' in ${...}:
+              _deactivate()
         # make sure `conda` points at the right env
         $CONDA_DEFAULT_ENV = env.name
+        # copy current $PATH to backup envvar
+        $_DEFAULT_CONDA_PATH = $PATH[:]
+        # delete any existing conda path
+        _ = [$PATH.remove(p) for p in $PATH if config.root_dir in p]
         # add the environment's bin dir in $PATH
         if env.bin_dir not in $PATH:
             $PATH.insert(0, env.bin_dir)
@@ -102,13 +103,10 @@ def _deactivate():
     """
     Deactivate the current environment and return to the default
     """
-    # get the environment for the conda environment variable
-    env = next(e for e in _get_envs() if e.name == $CONDA_DEFAULT_ENV)
-    # remove the environment's bin directory from $PATH
-    if env.bin_dir in $PATH:
-        $PATH.remove(env.bin_dir)
-    # remove the conda environment variable
-    del $CONDA_DEFAULT_ENV
+    if '_DEFAULT_CONDA_PATH' in ${...}:
+       $PATH = $_DEFAULT_CONDA_PATH[:]
+       del $_DEFAULT_CONDA_PATH
+       del $CONDA_DEFAULT_ENV
 
 
 def _xonda(args, stdin=None):
