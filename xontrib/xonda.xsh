@@ -1,8 +1,15 @@
 import os
-import conda.install as ci
-from conda import config
 from collections import namedtuple
 
+from xonsh.lazyasd import lazyobject
+
+@lazyobject
+def ci():
+    return importlib.import_module('conda.install')
+
+@lazyobject
+def config():
+    return importlib.import_module('conda.config')
 
 _Env = namedtuple('Env', ['name', 'path', 'bin_dir', 'envs_dir'])
 
