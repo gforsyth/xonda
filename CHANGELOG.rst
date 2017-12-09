@@ -4,6 +4,17 @@ xonda Change Log
 
 .. current developments
 
+v0.2.3
+====================
+
+**Changed:**
+
+* ``conda`` imports are now lazy using ``lazyasd`` for a 300ms speedup
+  in startup time.  Woo!
+
+
+
+
 v0.2.2
 ====================
 
