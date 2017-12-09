@@ -1,5 +1,5 @@
 $PROJECT = 'xonda'
-$ACTIVITIES = ['version_bump', 'changelog', 'tag', 'conda_forge', 'ghrelease', 'pypi']
+$ACTIVITIES = ['version_bump', 'changelog', 'tag', 'push-tag', 'conda_forge', 'ghrelease', 'pypi']
 
 $VERSION_BUMP_PATTERNS = [
     ('setup.py', 'version\s*=.*,', "version='$VERSION',")
