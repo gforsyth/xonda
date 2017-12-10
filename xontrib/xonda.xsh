@@ -1,4 +1,5 @@
 import os
+import importlib
 from collections import namedtuple
 
 from xonsh.lazyasd import lazyobject
