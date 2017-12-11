@@ -4,6 +4,17 @@ xonda Change Log
 
 .. current developments
 
+v0.2.4
+====================
+
+**Fixed:**
+
+* Added ``importlib`` import so that ``conda activate`` doesn't break 
+  everything.  Stupid bug.
+
+
+
+
 v0.2.3
 ====================
 
