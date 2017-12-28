@@ -90,6 +90,7 @@ def _activate(env_name):
               _deactivate()
         # make sure `conda` points at the right env
         $CONDA_DEFAULT_ENV = env.name
+        $CONDA_PREFIX = env.path
         # copy current $PATH to backup envvar
         $_DEFAULT_CONDA_PATH = $PATH[:]
         # delete any existing conda path
@@ -111,6 +112,7 @@ def _deactivate():
        $PATH = $_DEFAULT_CONDA_PATH[:]
        del $_DEFAULT_CONDA_PATH
        del $CONDA_DEFAULT_ENV
+    del $CONDA_PREFIX
 
 
 def _xonda(args, stdin=None):
