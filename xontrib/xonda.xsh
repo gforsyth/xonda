@@ -112,7 +112,8 @@ def _deactivate():
        $PATH = $_DEFAULT_CONDA_PATH[:]
        del $_DEFAULT_CONDA_PATH
        del $CONDA_DEFAULT_ENV
-    del $CONDA_PREFIX
+    if 'CONDA_PREFIX' in ${...}:
+        del $CONDA_PREFIX
 
 
 def _xonda(args, stdin=None):
