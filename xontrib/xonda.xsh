@@ -10,7 +10,13 @@ def ci():
 
 @lazyobject
 def config():
-    return importlib.import_module('conda.config')
+    try:
+        # breaking changes introduced in Anaconda 4.4.7
+        # try to import newer library structure first
+        context = importlib.import_module('conda.base.context')
+        return context.context
+    except ModuleNotFoundError:
+        return importlib.import_module('conda.config')
 
 _Env = namedtuple('Env', ['name', 'path', 'bin_dir', 'envs_dir'])
 
