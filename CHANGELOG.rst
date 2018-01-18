@@ -4,6 +4,16 @@ xonda Change Log
 
 .. current developments
 
+v0.2.5
+====================
+
+**Fixed:**
+
+* Updated ``xonda`` to work with Anaconda >= 4.4.7
+
+
+
+
 v0.2.4
 ====================
 
