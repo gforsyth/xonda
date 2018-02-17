@@ -4,6 +4,15 @@ This is a thin wrapper around `conda` for use with [xonsh](http://xon.sh)
 
 It provides tab completion for most features and also will tab-complete activate/select calls for environments.
 
+## Prerequisites
+
+Xonda requries that conda is already installed and importable from xonsh (i.e.,
+`import conda` works). In practice, this probably means that you need to have
+installed xonsh from conda.
+
+You also should have the conda bin directory prefixed to your path, per the
+conda installation instruction.
+
 ## Installation
 
 Just do a
