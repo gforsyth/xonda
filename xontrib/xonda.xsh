@@ -177,6 +177,6 @@ def _xonda_completer(prefix, line, start, end, ctx):
 aliases['conda'] = _xonda
 
 # add _xonda_completer to list of completers
-__xonsh_completers__['xonda'] = _xonda_completer
+__xonsh__.completers['xonda'] = _xonda_completer
 # bump to top of list
-__xonsh_completers__.move_to_end('xonda', last=False)
+__xonsh__.completers.move_to_end('xonda', last=False)
