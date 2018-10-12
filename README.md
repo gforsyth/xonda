@@ -1,75 +1,99 @@
 # xonda
 
-This is a thin wrapper around `conda` for use with [xonsh](http://xon.sh)
+This is a thin wrapper around `conda` for use with
+[xonsh](http://xon.sh)
 
-It provides tab completion for most features and also will tab-complete activate/select calls for environments.
+It provides tab completion for most features and also will tab-complete
+activate/select calls for environments.
 
 ## Prerequisites
 
-Xonda requries that conda is already installed and importable from xonsh (i.e.,
-`import conda` works). In practice, this probably means that you need to have
-installed xonsh from conda.
+Xonda requires that `conda` is already installed and importable from
+xonsh (i.e., `import conda` works). In practice, this probably means
+that you need to have installed `xonsh` from `conda` (or at least within
+your current `conda` environment).
 
-You also should have the conda bin directory prefixed to your path, per the
-conda installation instruction.
+You also should have the `conda` `bin/` directory prefixed to your
+`$PATH`.
+
+Recent versions of `conda` suggest to not add the base `conda` `bin/`
+directory to your path -- for now, please ignore this suggestion and do
+prefix it to your `$PATH` or `xonda` will not work as expected.
 
 ## Installation
 
-Just do a
-```console
+Just do a 
+
+```console 
 pip install xonda
 ```
 
-or
-```console
-conda install xonda -c conda-forge
+or 
+
+```console 
+conda install xonda -c conda-forge 
 ```
 
-or you can clone the repo and do
-```console
-pip install .
+or you can clone the repo and do 
+
+```console 
+pip install .  
 ```
 
-## Configuration
-To automatically load xonda at startup, put
+## Configuration 
+
+To automatically load xonda at startup, put 
+
 ```console
-xontrib load xonda
+xontrib load xonda 
 ```
 
 in your `.xonshrc`
 
 ## Usage
 
-Xonda will automatically alias itself as `conda`, so you should not see any
-differences.
+Xonda will automatically alias itself as `conda`, so you should not see
+any differences.
 
-(If you prefer it not to do that, remove the alias in your
-`.xonshrc`. Then, use as you would use `conda`, but just write `xonda` instead.)
+If you prefer it not to do that, you can remove the alias in your `.xonshrc` or
+at the command line by running:
+
+```console
+aliases.pop('conda')
+```
+
+Then, use as you would use `conda`, but just write `xonda` instead.
 
 ### Basic commands
 
-Everything should work the way `conda` always does. So just use it as you usually do.
-```console
-conda install -c conda-forge xonsh
+Everything should work the way `conda` always does. So just use it as
+you usually do.  
+
+```console 
+conda install -c conda-forge xonsh 
 ```
 
-```console
-conda remove python=2.7
+```console 
+conda remove python=2.7 
 ```
 
-### Environment activation
+### Environment activation 
 `xonda` provides TAB-completion for conda environments, so you don't have to
 keep double-checking. Also, no more `source activate` nonsense. To see a list of
 available environments, type
 
-```console
-conda activate <TAB>
+```console 
+conda activate <TAB> 
 ```
 
 To deactivate, simply type
 
-```console
-conda deactivate
+```console 
+conda deactivate 
 ```
 
 Isn't that simpler?
+
+If you are already within an environment and `activate` a separate environment,
+`xonda` will do you the favor of first deactivating the currently active
+environment.
