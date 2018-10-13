@@ -4,6 +4,16 @@ xonda Change Log
 
 .. current developments
 
+v0.8.0
+====================
+
+**Changed:**
+
+* Updated to use new ``__xonsh__`` api in 0.8.0
+
+
+
+
 v0.2.5
 ====================
 
