@@ -55,14 +55,24 @@ in your `.xonshrc`
 Xonda will automatically alias itself as `conda`, so you should not see
 any differences.
 
-If you prefer it not to do that, you can remove the alias in your `.xonshrc` or
-at the command line by running:
+If `xonda` is installed and activated via
+`xontrib load xonda` then `which conda` should
+return the alias name "conda" only, instead of
+the path to the actual `conda` executable
+
+**Right**
 
 ```console
-aliases.pop('conda')
+$ which conda
+conda
 ```
 
-Then, use as you would use `conda`, but just write `xonda` instead.
+**Wrong** (or at least, not activated)
+
+```console
+$ which conda
+/home/user/miniconda3/bin/conda
+```
 
 ### Basic commands
 
