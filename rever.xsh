@@ -2,7 +2,7 @@ $PROJECT = 'xonda'
 $ACTIVITIES = ['version_bump', 'changelog', 'tag', 'push_tag', 'conda_forge', 'ghrelease', 'pypi']
 
 $VERSION_BUMP_PATTERNS = [
-    ('setup.py', 'version\s*=.*,', "version='$VERSION',")
+    ('setup.py', r'version\s*=.*,', "version='$VERSION',")
     ]
 $CHANGELOG_FILENAME = 'CHANGELOG.rst'
 $CHANGELOG_IGNORE = ['TEMPLATE.rst']
