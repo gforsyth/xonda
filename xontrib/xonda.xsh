@@ -1,12 +1,59 @@
 import os
+from os.path import normcase, normpath, isdir, join, lexists
 import importlib
 from collections import namedtuple
 
 from xonsh.lazyasd import lazyobject
+import xonsh.platform as xp
+
 
 @lazyobject
-def ci():
-    return importlib.import_module('conda.install')
+def cdelete():
+    return importlib.import_module('conda.gateways.disk.delete')
+
+def symlink_conda(prefix, root_dir, shell=None):
+    # forked from https://github.com/conda/conda/blob/78c38a62d77b481eb23411bca3a441b881e61046/conda/install.py
+    # do not symlink root env - this clobbers activate incorrectly.
+    # prefix should always be longer than, or outside the root dir.
+    if normcase(normpath(prefix)) in normcase(normpath(root_dir)):
+        return
+    if xp.ON_WINDOWS:
+        where = 'Scripts'
+    else:
+        where = 'bin'
+    symlink_fn = os.symlink
+    if not isdir(join(prefix, where)):
+        os.makedirs(join(prefix, where))
+    symlink_conda_hlp(prefix, root_dir, where, symlink_fn)
+
+def symlink_conda_hlp(prefix, root_dir, where, symlink_fn):
+    # forked from https://github.com/conda/conda/blob/78c38a62d77b481eb23411bca3a441b881e61046/conda/install.py
+    scripts = ["conda", "activate", "deactivate"]
+    prefix_where = join(prefix, where)
+    if not isdir(prefix_where):
+        os.makedirs(prefix_where)
+    for f in scripts:
+        root_file = join(root_dir, where, f)
+        prefix_file = join(prefix_where, f)
+        try:
+            # try to kill stale links if they exist
+            if lexists(prefix_file):
+                cdelete.rm_rf(prefix_file)
+            # if they're in use, they won't be killed.  Skip making new symlink.
+            if not lexists(prefix_file):
+                symlink_fn(root_file, prefix_file)
+        except (IOError, OSError) as e:
+            if lexists(prefix_file) and (e.errno in (EPERM, EACCES, EROFS, EEXIST)):
+                log.debug("Cannot symlink {0} to {1}. Ignoring since link already exists."
+                          .format(root_file, prefix_file))
+            elif e.errno == ENOENT:
+                log.debug("Problem with symlink management {0} {1}. File may have been removed by "
+                          "another concurrent process." .format(root_file, prefix_file))
+            elif e.errno == EEXIST:
+                log.debug("Problem with symlink management {0} {1}. File may have been created by "
+                          "another concurrent process." .format(root_file, prefix_file))
+            else:
+                raise
 
 @lazyobject
 def config():
@@ -105,7 +152,7 @@ def _activate(env_name):
         if env.bin_dir not in $PATH:
             $PATH.insert(0, env.bin_dir)
         # ensure conda symlink exists in directory
-        ci.symlink_conda(env.path, config.default_prefix)
+        symlink_conda(env.path, config.default_prefix)
     else:
         print("No environment '{}' found".format(env_name))
 
