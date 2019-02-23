@@ -4,6 +4,17 @@ xonda Change Log
 
 .. current developments
 
+v0.9.0
+====================
+
+**Fixed:**
+
+* No longer importing deprecated ``conda.install``
+  Instead including a modified fork of the symlink code
+  until upstream xonsh support is solidified
+
+
+
 v0.8.0
 ====================
 
