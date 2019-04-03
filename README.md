@@ -40,6 +40,8 @@ or you can clone the repo and do
 pip install .  
 ```
 
+Note that `xonda` only works if it's installed in your base conda environment, so remember to `conda activate base` (in `bash` if necessary) first.
+
 ## Configuration 
 
 To automatically load xonda at startup, put 
