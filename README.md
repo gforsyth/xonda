@@ -1,3 +1,22 @@
+# Don't use this!
+
+It was great while it lasted(?) but `xonda` is no longer necessary.  
+Starting with `conda>=4.7.*` there is built-in `xonsh` support. 
+
+To enable `conda activate`, run `conda init xonsh` and it will tack 
+on the necessary configuration code to your `xonshrc` file and then 
+`conda activate` and `conda deactivate` should work as you expect.
+
+Please also make sure to remove any lines akin to `xontrib load xonda`
+-- loading two separate `conda activate` methods at once can only lead
+to bad things.
+
+You can remove `xonda` entirely by running `xpip uninstall xonda` or 
+`conda unininstall xonda` depending on your initial installation method.
+
+Thanks for using `xonda`!  I'll leave this up for any folks who 
+haven't yet upgraded `conda`, but I highly recommend upgrading `conda`.
+
 # xonda
 
 This is a thin wrapper around `conda` for use with
